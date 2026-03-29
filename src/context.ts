@@ -84,27 +84,53 @@ export function canvasContext(
 export interface ResizeCanvasOptions {
   /**
    * Maximum constraints for canvas scaling
-   *
-   * - `dpr` - Maximum device pixel ratio (default: 1.5)
-   * - `width` - Maximum canvas width (default: Infinity)
-   * - `height` - Maximum canvas height (default: Infinity)
    */
   max?: {
+    /**
+     * Maximum device pixel ratio
+     *
+     * @default 1.5
+     */
     dpr?: number
+
+    /**
+     * Maximum canvas width
+     *
+     * @default Infinity
+     */
     width?: number
+
+    /**
+     * Maximum canvas height
+     *
+     * @default Infinity
+     */
     height?: number
   }
 
   /**
    * Minimum constraints for canvas scaling
-   *
-   * - `dpr` - Minimum device pixel ratio (default: 1)
-   * - `width` - Minimum canvas width (default: 1)
-   * - `height`- Minimum canvas height (default: 1)
    */
   min?: {
+    /**
+     * Minimum device pixel ratio
+     *
+     * @default 1
+     */
     dpr?: number
+
+    /**
+     * Minimum canvas width
+     *
+     * @default 1
+     */
     width?: number
+
+    /**
+     * Minimum canvas height
+     *
+     * @default 1
+     */
     height?: number
   }
 
