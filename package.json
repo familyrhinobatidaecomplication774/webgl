@@ -1,7 +1,7 @@
 {
   "sideEffects"       : false,
   "name"              : "@obvia/webgl",
-  "description"       : "Modular WebGL lifecycle helpers for shaders, programs, buffers, attributes, textures, and uniforms — designed for clarity, ergonomics, and type-safe developer experience",
+  "description"       : "Lightweight, type‑safe WebGL helpers for shaders, programs, buffers, attributes, textures, and uniforms",
   "keywords"          : ["webgl", "graphics", "gpu", "shader", "program", "buffer", "attribute", "texture", "uniform", "rendering", "3d", "canvas", "utilities", "helpers", "type-safe", "modular", "lightweight", "obvia"],
   "license"           : "MIT",
   "homepage"          : "https://obvia.studio/",
