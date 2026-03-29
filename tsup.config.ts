@@ -6,6 +6,6 @@ export default defineConfig((options: Options) => ({
   dts         : true,
   minify      : true,
   clean       : true,
-  external    : ["react","vue","nuxt","next","clsx","class-variance-authority"],
+  external    : [],
   ...options
 }))
