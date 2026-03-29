@@ -1,7 +1,9 @@
+import type { BaseOptions } from "./option"
+
 /**
  * Configuration options for binding a vertex attribute
  */
-export interface BindAttributeOptions {
+export interface BindAttributeOptions extends BaseOptions {
   /**
    * Attribute name in the shader (e.g. "aPosition")
    */
@@ -30,13 +32,6 @@ export interface BindAttributeOptions {
    * @default 0
    */
   offset?: number
-
-  /**
-   * Throw error if attribute is not found
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**
@@ -96,18 +91,11 @@ export function bindAttribute(
 /**
  * Configuration options for enabling a vertex attribute
  */
-export interface EnableAttributeOptions {
+export interface EnableAttributeOptions extends BaseOptions {
   /**
    * Attribute name in the shader (e.g. "aPosition")
    */
   name: string
-
-  /**
-   * Throw error if attribute is not found
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**
@@ -146,18 +134,11 @@ export function enableAttribute(
 /**
  * Configuration options for disabling a vertex attribute
  */
-export interface DisableAttributeOptions {
+export interface DisableAttributeOptions extends BaseOptions {
   /**
    * Attribute name in the shader
    */
   name: string
-
-  /**
-   * Throw error if attribute is not found
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**
@@ -196,18 +177,11 @@ export function disableAttribute(
 /**
  * Configuration options for validating a vertex attribute
  */
-export interface ValidateAttributeOptions {
+export interface ValidateAttributeOptions extends BaseOptions {
   /**
    * Attribute name in the shader
    */
   name: string
-
-  /**
-   * Throw error if attribute is not found
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**

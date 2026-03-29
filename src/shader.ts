@@ -1,7 +1,9 @@
+import { BaseOptions } from "./core/option"
+
 /**
  * Configuration options for creating a WebGL shader object
  */
-export interface CreateShaderOptions {
+export interface CreateShaderOptions extends BaseOptions {
   /**
    * Shader type to create (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
    */
@@ -15,31 +17,42 @@ export interface CreateShaderOptions {
  * - `context` – WebGL rendering context to create the shader in
  * - `options` – Shader configuration
  *    - `type` – Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
+ *    - `strict` – Throw error if shader creation fails (default: false)
  *
  * **Usage**
  * ```ts
- * // Create a vertex shader
+ * // Silent mode (default): returns null if shader cannot be created
  * const vertexShader = createShader(context, { type: context.VERTEX_SHADER })
  *
- * // Create a fragment shader
- * const fragmentShader = createShader(context, { type: context.FRAGMENT_SHADER })
+ * // Strict mode: throws an error if shader cannot be created
+ * const fragmentShader = createShader(context, {
+ *   type: context.FRAGMENT_SHADER,
+ *   strict: true
+ * })
  * ```
  */
 export function createShader(
   context: WebGLRenderingContext,
-  { type }: { type: number }
-): WebGLShader {
+  options: CreateShaderOptions
+): WebGLShader | null {
+  const { type, strict = false } = options
+
   const shader = context.createShader(type)
+
   if (!shader) {
-    throw new Error("Failed to create shader")
+    if (strict) {
+      throw new Error("Failed to create shader")
+    }
+    return null
   }
+
   return shader
 }
 
 /**
  * Configuration options for compiling a WebGL shader
  */
-export interface CompileShaderOptions {
+export interface CompileShaderOptions extends BaseOptions {
   /**
    * GLSL source code string to compile
    */
@@ -59,6 +72,7 @@ export interface CompileShaderOptions {
  * - `options` – Shader configuration
  *    - `source` – GLSL source code
  *    - `type` – Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
+ *    - `strict` – Throw error if shader creation or compilation fails (default: false)
  *
  * **Usage**
  * ```ts
@@ -68,19 +82,29 @@ export interface CompileShaderOptions {
  *   type: context.VERTEX_SHADER
  * })
  *
- * // Create and compile a fragment shader
+ * // Strict mode: throws an error if compilation fails
  * const fragmentShader = compileShader(context, {
  *   source: fsSource,
- *   type: context.FRAGMENT_SHADER
+ *   type: context.FRAGMENT_SHADER,
+ *   strict: true
  * })
  * ```
  */
 export function compileShader(
   context: WebGLRenderingContext,
-  { source, type }: CompileShaderOptions
-): WebGLShader {
+  options: CompileShaderOptions
+): WebGLShader | null {
+  const { source, type, strict = false } = options
+
   // Create shader object using our utility
-  const shader = createShader(context, { type })
+  const shader = createShader(context, { type, strict })
+
+  if (!shader) {
+    if (strict) {
+      throw new Error("Failed to create shader")
+    }
+    return null
+  }
 
   // Attach GLSL source code
   context.shaderSource(shader, source)
@@ -88,38 +112,52 @@ export function compileShader(
   // Compile the shader source
   context.compileShader(shader)
 
-  // Check compilation status and throw if failed
+  // Check compilation status
   if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
-    throw new Error("Shader compilation failed: " + context.getShaderInfoLog(shader))
+    const infoLog = context.getShaderInfoLog(shader) || "Unknown error"
+    if (strict) {
+      throw new Error("Shader compilation failed: " + infoLog)
+    }
+    return null
   }
 
-  // Return the compiled shader object
   return shader
 }
 
 /**
- * Delete a WebGL shader object
+ * Delete a WebGL shader object and free GPU resources
  *
  * **Parameters**
  * - `context` – WebGL rendering context
  * - `shader` – Shader object to delete
+ * - `options` – Optional configuration
+ *    - `strict` – Throw error if shader is null or deletion fails (default: false)
  *
  * **Usage**
  * ```ts
- * // Create and compile a shader
- * const vertexShader = compileShader(context, {
- *   source: vsSource,
- *   type: context.VERTEX_SHADER
- * })
- *
- * // Delete the shader when no longer needed
+ * // Silent mode (default): ignores if shader is null
  * deleteShader(context, vertexShader)
+ *
+ * // Strict mode: throws an error if shader is null
+ * deleteShader(context, fragmentShader, { strict: true })
  * ```
  */
 export function deleteShader(
   context: WebGLRenderingContext,
-  shader: WebGLShader
+  shader: WebGLShader | null,
+  options: BaseOptions = {}
 ): void {
+  const { strict = false } = options
+
+  // If shader is null and strict mode is enabled, throw an error
+  if (!shader) {
+    if (strict) {
+      throw new Error("Cannot delete WebGL shader: shader is null.")
+    }
+    return
+  }
+
+  // Delete the shader and free GPU resources
   context.deleteShader(shader)
 }
 
@@ -129,6 +167,8 @@ export function deleteShader(
  * **Parameters**
  * - `context` – WebGL rendering context
  * - `shader` – Shader object to validate
+ * - `options` – Optional configuration
+ *    - `strict` – Throw error if validation fails (default: false)
  *
  * **Usage**
  * ```ts
@@ -138,16 +178,35 @@ export function deleteShader(
  *   type: context.VERTEX_SHADER
  * })
  *
- * // Validate compilation result
+ * // Silent mode (default): returns false if validation fails
  * if (!validateShader(context, vertexShader)) {
  *   console.error("Vertex shader failed to compile")
  * }
+ *
+ * // Strict mode: throws an error if validation fails
+ * validateShader(context, vertexShader, { strict: true })
  * ```
  */
 export function validateShader(
   context: WebGLRenderingContext,
-  shader: WebGLShader
+  shader: WebGLShader | null,
+  options: BaseOptions = {}
 ): boolean {
-  // Return true if shader compiled successfully, false otherwise
-  return context.getShaderParameter(shader, context.COMPILE_STATUS)
+  const { strict = false } = options
+
+  if (!shader) {
+    if (strict) {
+      throw new Error("Cannot validate shader: shader is null.")
+    }
+    return false
+  }
+
+  const status = context.getShaderParameter(shader, context.COMPILE_STATUS)
+
+  if (!status && strict) {
+    const infoLog = context.getShaderInfoLog(shader) || "Unknown error"
+    throw new Error("Shader validation failed: " + infoLog)
+  }
+
+  return !!status
 }

@@ -1,14 +1,9 @@
+import type { BaseOptions } from "./option"
+
 /**
  * Configuration options for creating a WebGL context
  */
-export interface CanvasContextOptions extends WebGLContextAttributes {
-  /**
-   * Suppress console error logging if WebGL cannot be created (unsupported, browser or device limits)
-   *
-   * @default false
-   */
-  strict?: boolean
-
+export interface CanvasContextOptions extends WebGLContextAttributes, BaseOptions {
   /**
    * Attempt to create a WebGL2 context first, fallback to WebGL1 if unavailable
    *

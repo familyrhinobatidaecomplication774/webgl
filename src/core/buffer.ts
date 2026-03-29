@@ -1,7 +1,9 @@
+import type { BaseOptions } from "./option"
+
 /**
  * Configuration options for creating a WebGL buffer
  */
-export interface BufferOptions {
+export interface BufferOptions extends BaseOptions {
   /**
    * Buffer target (`ARRAY_BUFFER` for vertex data, `ELEMENT_ARRAY_BUFFER` for indices)
    */
@@ -18,13 +20,6 @@ export interface BufferOptions {
    * @default STATIC_DRAW
    */
   usage?: number
-
-  /**
-   * Throw error if buffer cannot be created
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**
@@ -133,7 +128,7 @@ export function createBuffer(
 export function createQuadBuffer(
   context: WebGLRenderingContext,
   position: number,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): WebGLBuffer | null {
   const { strict = false } = options
 
@@ -183,7 +178,7 @@ export function createQuadBuffer(
  */
 export function createQuadIndexBuffer(
   context: WebGLRenderingContext,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): WebGLBuffer | null {
   const { strict = false } = options
 
@@ -230,7 +225,7 @@ export function createQuadIndexBuffer(
 export function createTriangleBuffer(
   context: WebGLRenderingContext,
   position: number,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): WebGLBuffer | null {
   const { strict = false } = options
 
@@ -280,7 +275,7 @@ export function createTriangleBuffer(
  */
 export function createTriangleIndexBuffer(
   context: WebGLRenderingContext,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): WebGLBuffer | null {
   const { strict = false } = options
 
@@ -329,7 +324,7 @@ export function createTriangleIndexBuffer(
 export function createCubeBuffer(
   context: WebGLRenderingContext,
   position: number,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): WebGLBuffer | null {
   const { strict = false } = options
 
@@ -383,7 +378,7 @@ export function createCubeBuffer(
  */
 export function createCubeIndexBuffer(
   context: WebGLRenderingContext,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): WebGLBuffer | null {
   const { strict = false } = options
 
@@ -578,7 +573,7 @@ export function updateBufferPartial(
 export function deleteBuffer(
   context: WebGLRenderingContext,
   buffer: WebGLBuffer | null,
-  options: { strict?: boolean } = {}
+  options: BaseOptions = {}
 ): void {
   const { strict = false } = options
 
