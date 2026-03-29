@@ -1,0 +1,12 @@
+{
+  "extends"         : "@obvia/presets/base-config",
+  "compilerOptions" : {
+    "incremental" : false,
+    "baseUrl"     : ".",
+    "paths"       : {
+      "@obvia/utilities" : ["src"]
+    }
+  },
+  "include"         : ["."],
+  "exclude"         : ["dist", "build", "node_modules"]
+}
