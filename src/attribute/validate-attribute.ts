@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../error"
 
 /**
  * Configuration options for validating a vertex attribute
@@ -37,19 +38,27 @@ export function validateAttribute(
   program: WebGLProgram,
   options: ValidateAttributeOptions
 ): number {
-  // Destructure options for clarity and consistency
+  // Extract attribute name and strict mode flag from options
   const { name, strict = false } = options
 
-  // Look up the attribute location in the linked shader program
+  // Query the attribute location from the linked shader program
   const location = context.getAttribLocation(program, name)
 
-  // If attribute is not found
+  // If the attribute is not found (-1 means missing)
   if (location === -1) {
-    // In strict mode, throw an error to alert the developer
-    if (strict) {
-      throw new Error(`Attribute "${name}" not found in shader program`)
-    }
+    // Delegate error handling to centralized handler
+    // - Throws AttributeError if strict = true
+    // - Does nothing if strict = false
+    handleError({
+      subject : "attribute",
+      context : {
+        action : "validation",
+        result : `Attribute "${name}" not found in shader program`
+      },
+      strict  : strict,
+    })
   }
 
+  // Return the location (either valid index or -1 if not found)
   return location
 }

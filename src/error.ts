@@ -158,10 +158,6 @@ export class CanvasError extends WebGLError {
  * - `context`  – Error details object typed as `WebGLErrorContext`
  * - `strict`   – Whether to throw an error (`true`) or return `false` (`false`)
  *
- * **Returns**
- * - Throws a category-specific error when `strict` is enabled
- * - Returns `false` when `strict` is disabled
- *
  * **Usage**
  * ```ts
  * // Shader error
@@ -194,7 +190,7 @@ export function handleError({
   strict: boolean
   subject: WebGLErrorType
   context: WebGLErrorContext
-}): boolean {
+}): void {
   if (strict) {
     switch (subject) {
       case "shader":
@@ -215,5 +211,4 @@ export function handleError({
         throw new WebGLError("WebGL", context)
     }
   }
-  return false
 }

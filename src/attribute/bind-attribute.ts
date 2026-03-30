@@ -121,6 +121,7 @@ export function bindAttribute(
   program: WebGLProgram,
   options: BindAttributeOptions
 ): void {
+  // Extract attribute options from options object
   const {
     name,
     size,
@@ -133,20 +134,25 @@ export function bindAttribute(
     integer = false
   } = options
 
+  // Validate attribute existence and get its location
+  // - Throws AttributeError if strict = true and attribute is missing
+  // - Returns -1 if strict = false and attribute is missing
   const location = validateAttribute(context, program, { name, strict })
 
+  // Only bind if attribute exists
   if (location !== -1) {
+    // Enable the vertex attribute array at the given location
     context.enableVertexAttribArray(location)
 
     if (integer && "vertexAttribIPointer" in context) {
-      // WebGL2 integer attribute binding
+      // WebGL2: bind integer attribute (e.g. ivec, uvec types)
       context.vertexAttribIPointer(location, size, type, stride, offset)
     } else {
-      // Default float attribute binding
+      // WebGL1/WebGL2: bind float attribute (default case)
       context.vertexAttribPointer(location, size, type, normalize, stride, offset)
     }
 
-    // WebGL2 instanced rendering support
+    // WebGL2: support instanced rendering (per-instance attributes)
     if ("vertexAttribDivisor" in context && divisor > 0) {
       context.vertexAttribDivisor(location, divisor)
     }
