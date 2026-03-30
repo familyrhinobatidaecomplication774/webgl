@@ -1,5 +1,8 @@
 import { BaseOptions } from "../option"
 
+/**
+ * Configuration options for setting a sampler uniform
+ */
 export interface UniformSamplerOptions extends BaseOptions {
   /**
    * Uniform name in the shader (e.g. "uTexture")
@@ -10,13 +13,6 @@ export interface UniformSamplerOptions extends BaseOptions {
    * Texture unit index (e.g. 0 for TEXTURE0)
    */
   unit: number
-
-  /**
-   * Throw error if uniform location is not found
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**

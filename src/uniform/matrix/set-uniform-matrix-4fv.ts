@@ -1,4 +1,4 @@
-import { BaseOptions } from "../../option"
+import type { BaseOptions } from "../../option"
 
 export interface UniformMatrix4Options extends BaseOptions {
   /**
@@ -17,13 +17,6 @@ export interface UniformMatrix4Options extends BaseOptions {
    * @default false
    */
   transpose?: boolean
-
-  /**
-   * Throw error if uniform location is not found
-   *
-   * @default false
-   */
-  strict?: boolean
 }
 
 /**

@@ -1,48 +1,61 @@
 import type { BaseOptions } from "../option"
 
+/**
+ * Configuration options for setting a vec1 uniform
+ */
 export interface Uniform1Options extends BaseOptions {
   /**
-   * Uniform name in the shader (e.g. "uTime", "uEnabled")
+   * Uniform name in the shader
    */
   name: string
 
   /**
-   * Value to assign (float or int)
+   * Value to assign
    */
-  value: number
-
-  /**
-   * Throw error if uniform location is not found
-   *
-   * @default false
-   */
-  strict?: boolean
+  value: number | boolean | Float32Array | Int32Array
 }
 
 /**
- * Set a single-component uniform (float or int) in a WebGL shader program
+ * Set a single-component uniform in a WebGL shader program
  *
  * **Parameters**
  * - `context` – Target WebGL rendering context
  * - `program` – Linked shader program
  * - `options` – Configuration object
  *    - `name` – Uniform name in the shader
- *    - `value` – Float or integer value
+ *    - `value` – Value to assign
  *    - `strict` – Throw error if uniform location is not found (default: false)
  *
  * **Usage**
  * ```ts
  * // Float uniform
  * setUniform1(context, program, {
- *   name: "uTime",
- *   value: performance.now() / 1000
+ *    name: "uTime",
+ *    value: performance.now() / 1000
  * })
  *
- * // Integer uniform (boolean flag)
+ * // Integer uniform
  * setUniform1(context, program, {
- *   name: "uEnabled",
- *   value: 1,
- *   strict: true
+ *    name: "uEnabled",
+ *    value: 1
+ * })
+ *
+ * // Boolean uniform
+ * setUniform1(context, program, {
+ *    name: "uFlag",
+ *    value: true
+ * })
+ *
+ * // Float array uniform
+ * setUniform1(context, program, {
+ *    name: "uWeights",
+ *    value: new Float32Array([0.1, 0.2, 0.3])
+ * })
+ *
+ * // Int array uniform
+ * setUniform1(context, program, {
+ *    name: "uIndices",
+ *    value: new Int32Array([1, 2, 3])
  * })
  * ```
  */
@@ -53,17 +66,43 @@ export function setUniform1(
 ): void {
   const { name, value, strict = false } = options
 
+  // Find the uniform location in the shader program
   const location = context.getUniformLocation(program, name)
+
+  // If uniform is not found, handle according to strict mode
   if (location === null) {
-    if (strict) {
-      throw new Error(`Uniform "${name}" not found in shader program`)
+    if (strict) throw new Error(`Uniform "${name}" not found in shader program`)
+    return
+  }
+
+  // Boolean → map true/false to 1/0 and call uniform1i
+  if (typeof value === "boolean") {
+    context.uniform1i(location, value ? 1 : 0)
+    return
+  }
+
+  // Number → if integer use uniform1i, otherwise use uniform1f
+  if (typeof value === "number") {
+    if (Number.isInteger(value)) {
+      context.uniform1i(location, value)
+    } else {
+      context.uniform1f(location, value)
     }
     return
   }
 
-  if (Number.isInteger(value)) {
-    context.uniform1i(location, value)
-  } else {
-    context.uniform1f(location, value)
+  // Float32Array → pass directly to uniform1fv
+  if (value instanceof Float32Array) {
+    context.uniform1fv(location, value)
+    return
   }
+
+  // Int32Array → pass directly to uniform1iv
+  if (value instanceof Int32Array) {
+    context.uniform1iv(location, value)
+    return
+  }
+
+  // If none of the supported types match, throw an error
+  throw new Error(`Unsupported uniform value type for "${name}"`)
 }

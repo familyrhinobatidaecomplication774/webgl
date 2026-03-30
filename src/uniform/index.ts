@@ -1,0 +1,8 @@
+export { setUniform1, type Uniform1Options } from "./set-uniform1"
+export { setUniform2, type Uniform2Options } from "./set-uniform2"
+export { setUniform3, type Uniform3Options } from "./set-uniform3"
+export { setUniform4, type Uniform4Options } from "./set-uniform4"
+
+export { setUniformSampler, type UniformSamplerOptions } from "./set-uniform-sampler"
+export { setUniformBlock, type UniformBlockOptions } from "./set-uniform-block"
+export { setUniformBuffer, type UniformBufferOptions } from "./set-uniform-buffer"

@@ -1,65 +1,61 @@
-import { BaseOptions } from "../option"
+import type { BaseOptions } from "../option"
 
+/**
+ * Configuration options for setting a vec4 uniform
+ */
 export interface Uniform4Options extends BaseOptions {
   /**
-   * Uniform name in the shader (e.g. "uLight", "uVector")
+   * Uniform name in the shader
    */
   name: string
 
   /**
-   * First component
+   * Value to assign
    */
-  x: number
-
-  /**
-   * Second component
-   */
-  y: number
-
-  /**
-   * Third component
-   */
-  z: number
-
-  /**
-   * Fourth component
-   */
-  w: number
-
-  /**
-   * Throw error if uniform location is not found
-   *
-   * @default false
-   */
-  strict?: boolean
+  value: [number, number, number, number] | boolean[] | Float32Array | Int32Array
 }
 
 /**
- * Set a vec4 uniform (float or int) in a WebGL shader program
+ * Set a vec4 uniform in a WebGL shader program
  *
- * Automatically detects type:
- * - If all values are integers → uniform4i
- * - Otherwise → uniform4f
+ * **Parameters**
+ * - `context` – Target WebGL rendering context
+ * - `program` – Linked shader program
+ * - `options` – Configuration object
+ *    - `name` – Uniform name in the shader
+ *    - `value` – Value to assign
+ *    - `strict` – Throw error if uniform location is not found (default: false)
  *
  * **Usage**
  * ```ts
- * // Float vec4 (light direction)
+ * // Float vec4 uniform
  * setUniform4(context, program, {
- *   name: "uLight",
- *   x: 1.0,
- *   y: 0.0,
- *   z: 0.0,
- *   w: 1.0
+ *    name: "uColor",
+ *    value: [0.5, 0.2, 0.8, 1.0]
  * })
  *
- * // Integer vec4 (e.g. RGBA as ints)
+ * // Integer vec4 uniform
  * setUniform4(context, program, {
- *   name: "uColorInt",
- *   x: 255,
- *   y: 128,
- *   z: 64,
- *   w: 32,
- *   strict: true
+ *    name: "uCoords",
+ *    value: [3, 7, 2, 5]
+ * })
+ *
+ * // Boolean vec4 uniform
+ * setUniform4(context, program, {
+ *    name: "uFlags",
+ *    value: [true, false, true, false]
+ * })
+ *
+ * // Float array uniform
+ * setUniform4(context, program, {
+ *    name: "uWeights",
+ *    value: new Float32Array([0.1, 0.2, 0.3, 0.4])
+ * })
+ *
+ * // Int array uniform
+ * setUniform4(context, program, {
+ *    name: "uIndices",
+ *    value: new Int32Array([1, 2, 3, 4])
  * })
  * ```
  */
@@ -68,19 +64,47 @@ export function setUniform4(
   program: WebGLProgram,
   options: Uniform4Options
 ): void {
-  const { name, x, y, z, w, strict = false } = options
+  const { name, value, strict = false } = options
 
+  // Find the uniform location in the shader program
   const location = context.getUniformLocation(program, name)
+
+  // If uniform is not found, handle according to strict mode
   if (location === null) {
-    if (strict) {
-      throw new Error(`Uniform "${name}" not found in shader program`)
+    if (strict) throw new Error(`Uniform "${name}" not found in shader program`)
+    return
+  }
+
+  // Boolean array → map true/false to 1/0 and call uniform4i
+  if (Array.isArray(value) && typeof value[0] === "boolean") {
+    const [x, y, z, w] = value as boolean[]
+    context.uniform4i(location, x ? 1 : 0, y ? 1 : 0, z ? 1 : 0, w ? 1 : 0)
+    return
+  }
+
+  // Number tuple → if all integers use uniform4i, otherwise use uniform4f
+  if (Array.isArray(value) && typeof value[0] === "number") {
+    const [x, y, z, w] = value as [number, number, number, number]
+    if (Number.isInteger(x) && Number.isInteger(y) && Number.isInteger(z) && Number.isInteger(w)) {
+      context.uniform4i(location, x, y, z, w)
+    } else {
+      context.uniform4f(location, x, y, z, w)
     }
     return
   }
 
-  if (Number.isInteger(x) && Number.isInteger(y) && Number.isInteger(z) && Number.isInteger(w)) {
-    context.uniform4i(location, x, y, z, w)
-  } else {
-    context.uniform4f(location, x, y, z, w)
+  // Float32Array → pass directly to uniform4fv
+  if (value instanceof Float32Array) {
+    context.uniform4fv(location, value)
+    return
   }
+
+  // Int32Array → pass directly to uniform4iv
+  if (value instanceof Int32Array) {
+    context.uniform4iv(location, value)
+    return
+  }
+
+  // If none of the supported types match, throw an error
+  throw new Error(`Unsupported uniform4 value type for "${name}"`)
 }

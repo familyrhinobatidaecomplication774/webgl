@@ -1,4 +1,4 @@
-import { BaseOptions } from "../../option"
+import type { BaseOptions } from "../../option"
 
 export interface UniformMatrix3Options extends BaseOptions {
   /**
