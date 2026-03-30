@@ -2,7 +2,7 @@ import { BaseOptions } from "../option"
 import { handleError } from "../error"
 
 /**
- * Configuration options for setting a matrix uniform (mat2, mat3, or mat4)
+ * Configuration options for setting a matrix uniform
  */
 export interface UniformMatrixOptions extends BaseOptions {
   /**
@@ -24,10 +24,10 @@ export interface UniformMatrixOptions extends BaseOptions {
 }
 
 /**
- * Set a matrix uniform (mat2, mat3, mat4, or non-square variants) in a WebGL shader program
+ * Set a matrix uniform (mat2, mat3, mat4, or WebGL2-only non-square variants) in a WebGL shader program
  *
  * **Parameters**
- * - `context` – Target WebGL rendering context (WebGL1 or WebGL2)
+ * - `context` – Target WebGL rendering context
  * - `program` – Linked shader program
  * - `options` – Configuration object
  *    - `name` – Uniform name in the shader
@@ -37,47 +37,46 @@ export interface UniformMatrixOptions extends BaseOptions {
  *
  * **Usage**
  * ```ts
- * // WebGL1: 2×2 identity matrix
+ * // mat2 (2×2 identity matrix)
  * const mat2 = new Float32Array([1, 0, 0, 1])
- * setUniformMatrix(context, program, {
- *   name: "uMat2",
- *   matrix: mat2
- * })
+ * setUniformMatrix(context, program, { name: "uMat2", matrix: mat2 })
  *
- * // WebGL1: 3×3 identity matrix with strict mode
+ * // mat3 (3×3 identity matrix with strict mode)
  * const mat3 = new Float32Array([1,0,0, 0,1,0, 0,0,1])
- * setUniformMatrix(context, program, {
- *   name: "uMat3",
- *   matrix: mat3,
- *   strict: true
- * })
+ * setUniformMatrix(context, program, { name: "uMat3", matrix: mat3, strict: true })
  *
- * // WebGL1: 4×4 identity matrix with transpose
+ * // mat4 (4×4 identity matrix with transpose)
  * const mat4 = new Float32Array([
  *   1,0,0,0,
  *   0,1,0,0,
  *   0,0,1,0,
  *   0,0,0,1
  * ])
- * setUniformMatrix(context, program, {
- *   name: "uMat4",
- *   matrix: mat4,
- *   transpose: true
- * })
+ * setUniformMatrix(context, program, { name: "uMat4", matrix: mat4, transpose: true })
  *
- * // WebGL2: non-square matrix (mat2x3)
+ * // WebGL2-only: mat2x3
  * const mat2x3 = new Float32Array([1,0,0, 0,1,0])
- * setUniformMatrix(gl2Context, program, {
- *   name: "uMat2x3",
- *   matrix: mat2x3
- * })
+ * setUniformMatrix(gl2Context, program, { name: "uMat2x3", matrix: mat2x3 })
  *
- * // WebGL2: non-square matrix (mat3x2)
+ * // WebGL2-only: mat3x2
  * const mat3x2 = new Float32Array([1,0,0, 0,1,0])
- * setUniformMatrix(gl2Context, program, {
- *   name: "uMat3x2",
- *   matrix: mat3x2
- * })
+ * setUniformMatrix(gl2Context, program, { name: "uMat3x2", matrix: mat3x2 })
+ *
+ * // WebGL2-only: mat2x4
+ * const mat2x4 = new Float32Array([1,0,0,0, 0,1,0,0])
+ * setUniformMatrix(gl2Context, program, { name: "uMat2x4", matrix: mat2x4 })
+ *
+ * // WebGL2-only: mat4x2
+ * const mat4x2 = new Float32Array([1,0, 0,1, 0,0, 0,0])
+ * setUniformMatrix(gl2Context, program, { name: "uMat4x2", matrix: mat4x2 })
+ *
+ * // WebGL2-only: mat3x4
+ * const mat3x4 = new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0])
+ * setUniformMatrix(gl2Context, program, { name: "uMat3x4", matrix: mat3x4 })
+ *
+ * // WebGL2-only: mat4x3
+ * const mat4x3 = new Float32Array([1,0,0, 0,1,0, 0,0,1, 0,0,0])
+ * setUniformMatrix(gl2Context, program, { name: "uMat4x3", matrix: mat4x3 })
  * ```
  */
 export function setUniformMatrix(
@@ -96,7 +95,7 @@ export function setUniformMatrix(
       subject : "uniform",
       context : {
         action  : "setUniformMatrix",
-        result  : `Uniform "${name}" not found`
+        result  : `Uniform "${name}" not found in shader program`
       },
       strict  : strict
     })
@@ -156,7 +155,7 @@ export function setUniformMatrix(
         subject : "uniform",
         context : {
           action  :"setUniformMatrix",
-          result  :`Unsupported uniform type for "${name}"`
+          result  :`Unsupported matrix length "${matrix.length}" for uniform "${name}"`
         },
         strict  : strict
       })
