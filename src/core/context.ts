@@ -41,21 +41,27 @@ export function canvasContext(
   canvas: HTMLCanvasElement,
   options: CanvasContextOptions = {}
 ): WebGLRenderingContext | WebGL2RenderingContext | null {
+  // Extract options: webGL2 flag, strict mode, and other context attributes
   const {
     webGL2 = false,
     strict = false,
     ...attributes
   } = options
 
+  // Define the context variable (can be WebGL1 or WebGL2)
   let context: WebGLRenderingContext | WebGL2RenderingContext | null = null
 
+  // If webGL2 is requested, try to get a WebGL2 context first
   if (webGL2) {
     context = canvas.getContext("webgl2", attributes) as WebGL2RenderingContext | null
   }
+
+  // If WebGL2 is not available, fall back to WebGL1
   if (!context) {
     context = canvas.getContext("webgl", attributes)
   }
 
+  // If no context was created and strict mode is enabled, throw an error
   if (!context && strict) {
     throw new Error(
       "Failed to initialize WebGL context. " +
@@ -64,6 +70,7 @@ export function canvasContext(
     )
   }
 
+  // Return the created context (or null if not available)
   return context
 }
 
@@ -225,6 +232,13 @@ export function resizeCanvas(
 
   // Attach auto resize listener if enabled
   if (autoResize) {
-    window.addEventListener("resize", () => resizeCanvas(canvas, options))
+    // Remove any existing listener to avoid duplicates
+    window.removeEventListener("resize", canvas._resizeHandler)
+
+    // Create and store a new handler on the canvas object
+    const handler = () => resizeCanvas(canvas, options)
+    ;(canvas as any)._resizeHandler = handler
+
+    window.addEventListener("resize", handler)
   }
 }
