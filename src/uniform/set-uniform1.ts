@@ -1,13 +1,13 @@
-import { BaseOptions } from "../option"
+import type { BaseOptions } from "../option"
 
-export interface Uniform1iOptions extends BaseOptions {
+export interface Uniform1Options extends BaseOptions {
   /**
-   * Uniform name in the shader (e.g. "uEnabled" or "uTexture")
+   * Uniform name in the shader (e.g. "uTime", "uEnabled")
    */
   name: string
 
   /**
-   * Integer value (0/1 for boolean, or texture unit index)
+   * Value to assign (float or int)
    */
   value: number
 
@@ -20,43 +20,40 @@ export interface Uniform1iOptions extends BaseOptions {
 }
 
 /**
- * Set an integer/boolean uniform in a WebGL shader program
+ * Set a single-component uniform (float or int) in a WebGL shader program
  *
  * **Parameters**
  * - `context` – Target WebGL rendering context
  * - `program` – Linked shader program
  * - `options` – Configuration object
  *    - `name` – Uniform name in the shader
- *    - `value` – Integer value (0/1 for boolean, or texture unit index)
+ *    - `value` – Float or integer value
  *    - `strict` – Throw error if uniform location is not found (default: false)
  *
  * **Usage**
  * ```ts
- * // Enable a feature flag
- * setUniform1i(context, program, {
- *   name: "uEnabled",
- *   value: 1
+ * // Float uniform
+ * setUniform1(context, program, {
+ *   name: "uTime",
+ *   value: performance.now() / 1000
  * })
  *
- * // Bind texture to unit 0 and assign sampler
- * context.activeTexture(context.TEXTURE0)
- * context.bindTexture(context.TEXTURE_2D, texture)
- * setUniform1i(context, program, {
- *   name: "uTexture",
- *   value: 0,
+ * // Integer uniform (boolean flag)
+ * setUniform1(context, program, {
+ *   name: "uEnabled",
+ *   value: 1,
  *   strict: true
  * })
  * ```
  */
-export function setUniform1i(
+export function setUniform1(
   context: WebGLRenderingContext | WebGL2RenderingContext,
   program: WebGLProgram,
-  options: Uniform1iOptions
+  options: Uniform1Options
 ): void {
   const { name, value, strict = false } = options
 
   const location = context.getUniformLocation(program, name)
-
   if (location === null) {
     if (strict) {
       throw new Error(`Uniform "${name}" not found in shader program`)
@@ -64,5 +61,9 @@ export function setUniform1i(
     return
   }
 
-  context.uniform1i(location, value)
+  if (Number.isInteger(value)) {
+    context.uniform1i(location, value)
+  } else {
+    context.uniform1f(location, value)
+  }
 }
