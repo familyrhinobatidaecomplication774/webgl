@@ -1,7 +1,10 @@
+import type { BaseOptions } from "../option"
+import { handleError } from "../error"
+
 /**
  * Configuration options for resizing a canvas element
  */
-export interface ResizeCanvasOptions {
+export interface ResizeCanvasOptions extends BaseOptions {
   /**
    * Maximum constraints for canvas scaling
    */
@@ -135,17 +138,40 @@ export function resizeCanvas(
     source = window.devicePixelRatio || 1,
     autoResize = false,
     onResize,
-    rounding = "floor"
+    rounding = "floor",
+    strict = false
   } = options
 
-  // Select rounding function based on strategy
-  const roundFn = Math[rounding]
+  // Validate rounding strategy
+  const roundFn = (Math as any)[rounding]
+  if (typeof roundFn !== "function") {
+    handleError({
+      subject : "canvas",
+      context : {
+        action  : "resize",
+        result  : `Invalid rounding strategy "${rounding}" provided`
+      },
+      strict  : strict
+    })
+    return
+  }
 
   // Clamp DPR between min and max
   const dpr = Math.min(Math.max(source || 1, minDpr), maxDpr)
 
   // Get canvas size from its bounding box
   const { width, height } = canvas.getBoundingClientRect()
+  if (width === 0 || height === 0) {
+    handleError({
+      subject : "canvas",
+      context : {
+        action  : "resize",
+        result  : "Canvas bounding box returned zero size"
+      },
+      strict  : strict
+    })
+    return
+  }
 
   // Apply DPR scaling with min/max constraints
   canvas.width = Math.min(maxWidth, Math.max(minWidth, roundFn(width * dpr)))
@@ -156,13 +182,24 @@ export function resizeCanvas(
 
   // Attach auto resize listener if enabled
   if (autoResize) {
-    // Remove any existing listener to avoid duplicates
-    window.removeEventListener("resize", (canvas as any)._resizeHandler)
+    try {
+      // Remove any existing listener to avoid duplicates
+      window.removeEventListener("resize", (canvas as any)._resizeHandler)
 
-    // Create and store a new handler on the canvas object
-    const handler = () => resizeCanvas(canvas, options)
-    ;(canvas as any)._resizeHandler = handler
+      // Create and store a new handler on the canvas object
+      const handler = () => resizeCanvas(canvas, options)
+      ;(canvas as any)._resizeHandler = handler
 
-    window.addEventListener("resize", handler)
+      window.addEventListener("resize", handler)
+    } catch {
+      handleError({
+        subject: "canvas",
+        context: {
+          action: "resize",
+          result: "Failed to attach auto-resize listener"
+        },
+        strict
+      })
+    }
   }
 }
