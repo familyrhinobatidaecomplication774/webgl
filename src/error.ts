@@ -113,22 +113,3 @@ export function handleError(
   }
   return false
 }
-
-/**
- * Format a standardized WebGL error log message
- *
- * @param category - Error category (shader, program, buffer, attribute, uniform, texture, canvas)
- * @param action - Operation being performed (creation, compilation, validation, etc.)
- * @param details - Human-readable description of the failure
- * @param infoLog - Optional WebGL info log string
- */
-function formatError(
-  category: string,
-  action: string,
-  details: string,
-  infoLog?: string
-): string {
-  return `[${category.toUpperCase()}] ${action} - failed : ${details}${
-    infoLog ? " - Context : " + infoLog : ""
-  }`
-}
