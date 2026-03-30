@@ -121,7 +121,7 @@ export function bindAttribute(
   program: WebGLProgram,
   options: BindAttributeOptions
 ): void {
-  // Extract attribute options from options object
+  // Extract attribute options from the provided configuration
   const {
     name,
     size,
@@ -130,31 +130,58 @@ export function bindAttribute(
     offset = 0,
     divisor = 0,
     normalize = false,
-    strict = false,
-    integer = false
+    strict = false
   } = options
 
-  // Validate attribute existence and get its location
-  // - Throws AttributeError if strict = true and attribute is missing
-  // - Returns -1 if strict = false and attribute is missing
+  // Validate attribute existence and get its location in the shader program
   const location = validateAttribute(context, program, { name, strict })
 
-  // Only bind if attribute exists
+  // Only proceed if the attribute exists
   if (location !== -1) {
     // Enable the vertex attribute array at the given location
     context.enableVertexAttribArray(location)
 
-    if (integer && "vertexAttribIPointer" in context) {
-      // WebGL2: bind integer attribute (e.g. ivec, uvec types)
-      context.vertexAttribIPointer(location, size, type, stride, offset)
+    // Query attribute metadata from the shader program
+    const attributeInfo =
+      "getActiveAttrib" in context ? context.getActiveAttrib(program, location) : null
+
+    let isIntegerAttribute = false
+
+    if (attributeInfo) {
+      // Always safe: check for signed integer types (available in WebGL1 & WebGL2)
+      if (
+        attributeInfo.type === context.INT ||
+        attributeInfo.type === context.INT_VEC2 ||
+        attributeInfo.type === context.INT_VEC3 ||
+        attributeInfo.type === context.INT_VEC4
+      ) {
+        isIntegerAttribute = true
+      }
+
+      // Only check unsigned integer types if running in WebGL2
+      if ("vertexAttribIPointer" in context) {
+        if (
+          attributeInfo.type === context.UNSIGNED_INT ||
+          attributeInfo.type === context.UNSIGNED_INT_VEC2 ||
+          attributeInfo.type === context.UNSIGNED_INT_VEC3 ||
+          attributeInfo.type === context.UNSIGNED_INT_VEC4
+        ) {
+          isIntegerAttribute = true
+        }
+      }
+    }
+
+    if (isIntegerAttribute && "vertexAttribIPointer" in context) {
+      // WebGL2: bind integer attribute (ivec/uvec types)
+      (context as WebGL2RenderingContext).vertexAttribIPointer(location, size, type, stride, offset)
     } else {
-      // WebGL1/WebGL2: bind float attribute (default case)
+      // Default: bind float attribute (vec types)
       context.vertexAttribPointer(location, size, type, normalize, stride, offset)
     }
 
     // WebGL2: support instanced rendering (per-instance attributes)
     if ("vertexAttribDivisor" in context && divisor > 0) {
-      context.vertexAttribDivisor(location, divisor)
+      (context as WebGL2RenderingContext).vertexAttribDivisor(location, divisor)
     }
   }
 }
