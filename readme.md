@@ -443,3 +443,363 @@ deleteBuffer(context, vbo, { strict: true })
 deleteBuffer(context, vbo)
 deleteBuffer(context, ibo)
 ```
+
+## Uniforms
+
+By centralizing uniform setting logic, these helpers provide a unified, predictable API for assigning 
+values to shader uniforms. This reduces repetitive code, ensures consistent type handling, and 
+simplifies error management with optional strict mode.
+
+### API
+
+#### setUniform1
+Sets a single‑component uniform (float, int, boolean, or array).
+
+- `context` – WebGL rendering context (WebGL1 or WebGL2)
+- `program` – Linked shader program
+- `options` – Uniform configuration
+    - `name` – Uniform name in the shader
+    - `value` – Value to assign (`number | boolean | Float32Array | Int32Array`)
+    - `strict` – Throw error if uniform location is not found (default: false)
+
+```ts
+// Float uniform
+setUniform1(context, program, { name: "uTime", value: performance.now() / 1000 })
+
+// Integer uniform
+setUniform1(context, program, { name: "uEnabled", value: 1 })
+
+// Boolean uniform
+setUniform1(context, program, { name: "uFlag", value: true })
+
+// Float array uniform
+setUniform1(context, program, { name: "uWeights", value: new Float32Array([0.1, 0.2, 0.3]) })
+
+// Int array uniform
+setUniform1(context, program, { name: "uIndices", value: new Int32Array([1, 2, 3]) })
+
+// Strict mode
+setUniform1(context, program, { name: "uMissing", value: 0, strict: true })
+```
+
+
+#### setUniform2
+Sets a two‑component uniform (vec2).
+
+- `context` – WebGL rendering context (WebGL1 or WebGL2)
+- `program` – Linked shader program
+- `options` – Uniform configuration
+    - `name` – Uniform name in the shader
+    - `value` – Value to assign (`[number, number] | boolean[] | Float32Array | Int32Array`)
+    - `strict` – Throw error if uniform location is not found (default: false)
+
+```ts
+// Float vec2 uniform
+setUniform2(context, program, {
+  name: "uOffset",
+  value: [0.5, 1.2]
+})
+
+// Integer vec2 uniform
+setUniform2(context, program, {
+  name: "uCoords",
+  value: [3, 7]
+})
+
+// Boolean vec2 uniform
+setUniform2(context, program, {
+  name: "uFlags",
+  value: [true, false]
+})
+
+// Float array uniform
+setUniform2(context, program, {
+  name: "uWeights",
+  value: new Float32Array([0.1, 0.2])
+})
+
+// Int array uniform
+setUniform2(context, program, {
+  name: "uIndices",
+  value: new Int32Array([1, 2])
+})
+
+// Strict mode example
+setUniform2(context, program, {
+  name: "uMissing",
+  value: [0, 0],
+  strict: true
+})
+```
+
+
+#### setUniform3
+Sets a three‑component uniform (vec3).
+
+- `context` – WebGL rendering context (WebGL1 or WebGL2)
+- `program` – Linked shader program
+- `options` – Uniform configuration
+    - `name` – Uniform name in the shader
+    - `value` – Value to assign (`[number, number, number] | boolean[] | Float32Array | Int32Array`)
+    - `strict` – Throw error if uniform location is not found (default: false)
+
+```ts
+// Float vec3 uniform
+setUniform3(context, program, {
+  name: "uColor",
+  value: [1.0, 0.5, 0.0]
+})
+
+// Integer vec3 uniform
+setUniform3(context, program, {
+  name: "uCoords",
+  value: [10, 20, 30]
+})
+
+// Boolean vec3 uniform
+setUniform3(context, program, {
+  name: "uFlags",
+  value: [true, false, true]
+})
+
+// Float array uniform
+setUniform3(context, program, {
+  name: "uWeights",
+  value: new Float32Array([0.1, 0.2, 0.3])
+})
+
+// Int array uniform
+setUniform3(context, program, {
+  name: "uIndices",
+  value: new Int32Array([1, 2, 3])
+})
+
+// Strict mode example
+setUniform3(context, program, {
+  name: "uMissing",
+  value: [0, 0, 0],
+  strict: true
+})
+```
+
+
+#### setUniform4
+Sets a four‑component uniform (vec4).
+
+- `context` – WebGL rendering context (WebGL1 or WebGL2)
+- `program` – Linked shader program
+- `options` – Uniform configuration
+    - `name` – Uniform name in the shader
+    - `value` – Value to assign (`[number, number, number, number] | boolean[] | Float32Array | Int32Array`)
+    - `strict` – Throw error if uniform location is not found (default: false)
+
+```ts
+// Float vec4 uniform
+setUniform4(context, program, {
+  name: "uColor",
+  value: [1.0, 0.5, 0.0, 1.0]
+})
+
+// Integer vec4 uniform
+setUniform4(context, program, {
+  name: "uCoords",
+  value: [10, 20, 30, 40]
+})
+
+// Boolean vec4 uniform
+setUniform4(context, program, {
+  name: "uFlags",
+  value: [true, false, true, false]
+})
+
+// Float array uniform
+setUniform4(context, program, {
+  name: "uWeights",
+  value: new Float32Array([0.1, 0.2, 0.3, 0.4])
+})
+
+// Int array uniform
+setUniform4(context, program, {
+  name: "uIndices",
+  value: new Int32Array([1, 2, 3, 4])
+})
+
+// Strict mode example
+setUniform4(context, program, {
+  name: "uMissing",
+  value: [0, 0, 0, 0],
+  strict: true
+})
+```
+
+
+#### setUniformBlock (WebGL2‑only)
+Binds a uniform block to a binding point in a WebGL2 shader program.
+
+- `context` – WebGL2 rendering context (not supported in WebGL1)
+- `program` – Linked shader program
+- `options` – Uniform block configuration
+    - `name` – Uniform block name in the shader
+    - `index` – Binding point index
+    - `strict` – Throw error if uniform block is not found (default: false)
+
+```ts
+// Bind uniform block "Matrices" to binding point 0
+setUniformBlock(context, program, {
+  name: "Matrices",
+  index: 0
+})
+
+// With strict mode enabled
+setUniformBlock(context, program, {
+  name: "Matrices",
+  index: 0,
+  strict: true
+})
+```
+
+
+#### setUniformBuffer (WebGL2‑only)
+Binds a buffer to a uniform binding point in a WebGL2 shader program.
+
+- `context` – WebGL2 rendering context (not supported in WebGL1)
+- `options` – Uniform buffer configuration
+    - `buffer` – WebGLBuffer to bind
+    - `index` – Binding point index
+    - `strict` – Throw error if buffer binding fails (default: false)
+
+```ts
+// Create buffer and bind to binding point 0
+const buffer = createBuffer(context, {
+  target: context.UNIFORM_BUFFER,
+  data: new Float32Array([0.1, 0.2, 0.3, 0.4])
+})
+
+setUniformBuffer(context, {
+  buffer,
+  index: 0
+})
+
+// With strict mode enabled
+setUniformBuffer(context, {
+  buffer,
+  index: 0,
+  strict: true
+})
+```
+
+
+#### setUniformMatrix
+Sets matrix uniforms (mat2, mat3, mat4, and WebGL2‑only non‑square variants).
+
+- `context` – WebGL rendering context (WebGL2 required for non‑square matrices)
+- `program` – Linked shader program
+- `options` – Matrix uniform configuration
+    - `name` – Uniform name in the shader
+    - `matrix` – Matrix values as a `Float32Array`
+    - `transpose` – Whether to transpose the matrix before uploading (default: false)
+    - `strict` – Throw error if uniform location or type is not found (default: false)
+
+```ts
+// mat2 (2×2 identity matrix)
+const mat2 = new Float32Array([1, 0, 0, 1])
+setUniformMatrix(context, program, { name: "uMat2", matrix: mat2 })
+
+// mat3 (3×3 identity matrix with strict mode)
+const mat3 = new Float32Array([1,0,0, 0,1,0, 0,0,1])
+setUniformMatrix(context, program, { name: "uMat3", matrix: mat3, strict: true })
+
+// mat4 (4×4 identity matrix with transpose)
+const mat4 = new Float32Array([
+  1,0,0,0,
+  0,1,0,0,
+  0,0,1,0,
+  0,0,0,1
+])
+setUniformMatrix(context, program, { name: "uMat4", matrix: mat4, transpose: true })
+
+// WebGL2‑only: mat2x3
+const mat2x3 = new Float32Array([1,0,0, 0,1,0])
+setUniformMatrix(gl2Context, program, { name: "uMat2x3", matrix: mat2x3 })
+
+// WebGL2‑only: mat3x2
+const mat3x2 = new Float32Array([1,0,0, 0,1,0])
+setUniformMatrix(gl2Context, program, { name: "uMat3x2", matrix: mat3x2 })
+
+// WebGL2‑only: mat2x4
+const mat2x4 = new Float32Array([1,0,0,0, 0,1,0,0])
+setUniformMatrix(gl2Context, program, { name: "uMat2x4", matrix: mat2x4 })
+
+// WebGL2‑only: mat4x2
+const mat4x2 = new Float32Array([1,0, 0,1, 0,0, 0,0])
+setUniformMatrix(gl2Context, program, { name: "uMat4x2", matrix: mat4x2 })
+
+// WebGL2‑only: mat3x4
+const mat3x4 = new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0])
+setUniformMatrix(gl2Context, program, { name: "uMat3x4", matrix: mat3x4 })
+
+// WebGL2‑only: mat4x3
+const mat4x3 = new Float32Array([1,0,0, 0,1,0, 0,0,1, 0,0,0])
+setUniformMatrix(gl2Context, program, { name: "uMat4x3", matrix: mat4x3 })
+```
+
+
+#### setUniformSampler
+Sets a sampler uniform (texture unit binding).
+
+- `context` – WebGL rendering context (WebGL1 or WebGL2)
+- `program` – Linked shader program
+- `options` – Sampler uniform configuration
+    - `name` – Sampler uniform name in the shader (e.g. `"uTexture"`)
+    - `unit` – Texture unit index (must be ≥ 0, e.g. `0` for `TEXTURE0`)
+    - `strict` – Throw error if uniform location is not found (default: false)
+
+```ts
+// Bind texture to unit 0 and assign sampler
+context.activeTexture(context.TEXTURE0)
+context.bindTexture(context.TEXTURE_2D, texture)
+
+setUniformSampler(context, program, {
+  name: "uTexture",
+  unit: 0
+})
+
+// With strict mode enabled
+setUniformSampler(context, program, {
+  name: "uTexture",
+  unit: 0,
+  strict: true
+})
+```
+
+
+#### setUniformUi (WebGL2‑only)
+Sets unsigned integer uniforms (1–4 components).
+
+- `context` – WebGL2 rendering context (not supported in WebGL1)
+- `program` – Linked shader program
+- `options` – Unsigned integer uniform configuration
+    - `name` – Uniform name in the shader (e.g. `"uCount"`)
+    - `values` – One to four unsigned integer values
+        - `[number]` → `uniform1ui`
+        - `[number, number]` → `uniform2ui`
+        - `[number, number, number]` → `uniform3ui`
+        - `[number, number, number, number]` → `uniform4ui`
+    - `strict` – Throw error if uniform location is not found (default: false)
+
+```ts
+// Single unsigned int
+setUniformUi(context, program, { name: "uCount", values: [5] })
+
+// Two unsigned ints
+setUniformUi(context, program, { name: "uCoords", values: [10, 20] })
+
+// Three unsigned ints
+setUniformUi(context, program, { name: "uTriple", values: [1, 2, 3] })
+
+// Four unsigned ints
+setUniformUi(context, program, { name: "uColor", values: [255, 128, 64, 32] })
+
+// Strict mode example
+setUniformUi(context, program, { name: "uMissing", values: [0], strict: true })
+```
