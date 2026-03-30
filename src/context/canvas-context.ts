@@ -1,5 +1,5 @@
 import type { BaseOptions } from "../option"
-import { handleError } from "../error"
+import { handleError } from "../utility/handle-error"
 
 /**
  * Configuration options for creating a WebGL context

@@ -1,5 +1,5 @@
-import { parseSource } from "./utility/parse-source"
-import { parseContext } from "./utility/parse-context"
+import { parseSource } from "./parse-source"
+import { parseContext } from "./parse-context"
 
 /**
  * Context object for WebGL errors
