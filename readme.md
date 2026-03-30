@@ -1,77 +1,6 @@
 # WebGL
 
-## Canvas
-
-By centralizing context creation and resize logic, it provides a unified, predictable API for
-obtaining WebGL contexts and managing canvas scaling. This reduces repetitive setup code, ensures
-consistent handling of device pixel ratios, and simplifies error management with optional strict mode.
-
-### API
-
-#### canvasContext
-Safely obtain a WebGL rendering context from a canvas element.
-
-- `canvas` – Target canvas element to initialize WebGL on
-- `options` – Optional configuration (extends WebGL context attributes)
-  - `strict` – Throw error if WebGL cannot be created (default: false)
-  - `webGL2` – Attempt to create a WebGL2 context first, fallback to WebGL1 (default: false)
-  - `*` – Inherits all standard WebGL context attributes
-
-```ts
-// Silent mode (default): returns null if WebGL cannot be created
-const ctxDefault = canvasContext(canvas)
-
-// Strict mode: throws an error if WebGL cannot be created
-const ctxStrict = canvasContext(canvas, { strict: true })
-
-// Custom options (disable antialias, depth buffer)
-const ctxCustom = canvasContext(canvas, { antialias: false, depth: false })
-
-// Try WebGL2 first, fallback to WebGL1
-const ctxWebGL2 = canvasContext(canvas, { webGL2: true })
-
-if (!ctxDefault) {
-  // Handle fallback manually if needed
-}
-```
-
-#### resizeCanvas
-Resize a canvas element based on its bounding box and device pixel ratio (DPR).
-
-- `canvas` – Target canvas element to resize
-- `options` – Optional configuration
-  - `max` – Maximum constraints
-    - `dpr` – Maximum device pixel ratio (default: 1.5)
-    - `width` – Maximum canvas width (default: Infinity)
-    - `height` – Maximum canvas height (default: Infinity)
-  - `min` – Minimum constraints
-    - `dpr` – Minimum device pixel ratio (default: 1)
-    - `width` – Minimum canvas width (default: 1)
-    - `height` – Minimum canvas height (default: 1)
-  - `source` – Device pixel ratio source (default: `window.devicePixelRatio || 1`)
-  - `autoResize` – Automatically resize on window resize events (default: false)
-  - `onResize` – Callback invoked after resize with new width/height
-  - `rounding` – Rounding strategy for DPR scaling (`"floor" | "round" | "ceil"`)
-
-```ts
-// Default usage (uses window.devicePixelRatio)
-resizeCanvas(canvas)
-
-// Custom DPR source
-resizeCanvas(canvas, { source: 2 })
-
-// Custom min/max constraints
-resizeCanvas(canvas, { max: { dpr: 2 }, min: { width: 10, height: 10 } })
-
-// Auto resize with callback
-resizeCanvas(canvas, {
-  autoResize: true,
-  onResize: (w, h) => console.log("Resized :", w, h),
-  rounding: "round"
-})
-```
-
-## Attributes
+## Attribute
 
 This section documents the helper functions for managing vertex attributes, including binding, enabling, disabling, and validating
 
@@ -199,7 +128,7 @@ if (location !== -1) {
 }
 ```
 
-## Buffers
+## Buffer
 
 By centralizing validation and using a consistent options‑object pattern, it reduces boilerplate,
 eliminates code duplication, and ensures a clean, predictable API for creating, updating, deleting,
@@ -212,10 +141,10 @@ Creates a generic WebGL buffer and uploads data.
 
 - `context` – WebGL rendering context
 - `options` – Buffer configuration
-  - `target` – Buffer target (`ARRAY_BUFFER` or `ELEMENT_ARRAY_BUFFER`)
-  - `data` – Vertex or index data (typed array)
-  - `usage` – Buffer usage hint (default: `STATIC_DRAW`)
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `target` – Buffer target (`ARRAY_BUFFER` or `ELEMENT_ARRAY_BUFFER`)
+    - `data` – Vertex or index data (typed array)
+    - `usage` – Buffer usage hint (default: `STATIC_DRAW`)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -248,7 +177,7 @@ Creates a buffer for a full‑screen quad.
 - `context` – WebGL rendering context
 - `position` – Attribute location index for vertex positions
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -271,7 +200,7 @@ Creates an index buffer for a full‑screen quad.
 
 - `context` – WebGL rendering context
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -291,7 +220,7 @@ Creates a buffer for a full‑screen triangle.
 - `context` – WebGL rendering context
 - `position` – Attribute location index for vertex positions
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -309,7 +238,7 @@ Creates an index buffer for a full‑screen triangle.
 
 - `context` – WebGL rendering context
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -329,7 +258,7 @@ Creates a buffer for a unit cube.
 - `context` – WebGL rendering context
 - `position` – Attribute location index for vertex positions
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -349,7 +278,7 @@ Creates an index buffer for a cube.
 
 - `context` – WebGL rendering context
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer cannot be created (default: false)
+    - `strict` – Throw error if buffer cannot be created (default: false)
 
 ```ts
 // Silent mode (default): returns null if buffer cannot be created
@@ -371,10 +300,10 @@ Updates an existing WebGL buffer with new data.
 - `context` – WebGL rendering context
 - `buffer` – Existing buffer to update
 - `options` – Buffer configuration
-  - `target` – Buffer target (`ARRAY_BUFFER` or `ELEMENT_ARRAY_BUFFER`)
-  - `data` – New typed array data to upload
-  - `usage` – Buffer usage hint (default: `STATIC_DRAW`)
-  - `strict` – Throw error if buffer binding fails (default: false)
+    - `target` – Buffer target (`ARRAY_BUFFER` or `ELEMENT_ARRAY_BUFFER`)
+    - `data` – New typed array data to upload
+    - `usage` – Buffer usage hint (default: `STATIC_DRAW`)
+    - `strict` – Throw error if buffer binding fails (default: false)
 
 ```ts
 // Replace the entire buffer with new vertices
@@ -407,10 +336,10 @@ Partially updates an existing WebGL buffer with new data.
 - `context` – WebGL rendering context
 - `buffer` – Existing buffer to update
 - `options` – Buffer configuration
-  - `target` – Buffer target (`ARRAY_BUFFER` or `ELEMENT_ARRAY_BUFFER`)
-  - `data` – Typed array containing new data
-  - `offset` – Byte offset in the buffer where data should be written (default: 0)
-  - `strict` – Throw error if buffer binding fails (default: false)
+    - `target` – Buffer target (`ARRAY_BUFFER` or `ELEMENT_ARRAY_BUFFER`)
+    - `data` – Typed array containing new data
+    - `offset` – Byte offset in the buffer where data should be written (default: 0)
+    - `strict` – Throw error if buffer binding fails (default: false)
 
 ```ts
 // Replace only the first vertex (two floats) in the buffer
@@ -438,7 +367,7 @@ Deletes a WebGL buffer and frees GPU memory.
 - `context` – WebGL rendering context
 - `buffer` – Buffer object to delete
 - `options` – Optional configuration
-  - `strict` – Throw error if buffer deletion fails (default: false)
+    - `strict` – Throw error if buffer deletion fails (default: false)
 
 ```ts
 // Silent mode (default): ignores if buffer is null
@@ -452,7 +381,78 @@ deleteBuffer(context, vbo)
 deleteBuffer(context, ibo)
 ```
 
-## Uniforms
+## Canvas
+
+By centralizing context creation and resize logic, it provides a unified, predictable API for
+obtaining WebGL contexts and managing canvas scaling. This reduces repetitive setup code, ensures
+consistent handling of device pixel ratios, and simplifies error management with optional strict mode.
+
+### API
+
+#### canvasContext
+Safely obtain a WebGL rendering context from a canvas element.
+
+- `canvas` – Target canvas element to initialize WebGL on
+- `options` – Optional configuration (extends WebGL context attributes)
+  - `strict` – Throw error if WebGL cannot be created (default: false)
+  - `webGL2` – Attempt to create a WebGL2 context first, fallback to WebGL1 (default: false)
+  - `*` – Inherits all standard WebGL context attributes
+
+```ts
+// Silent mode (default): returns null if WebGL cannot be created
+const ctxDefault = canvasContext(canvas)
+
+// Strict mode: throws an error if WebGL cannot be created
+const ctxStrict = canvasContext(canvas, { strict: true })
+
+// Custom options (disable antialias, depth buffer)
+const ctxCustom = canvasContext(canvas, { antialias: false, depth: false })
+
+// Try WebGL2 first, fallback to WebGL1
+const ctxWebGL2 = canvasContext(canvas, { webGL2: true })
+
+if (!ctxDefault) {
+  // Handle fallback manually if needed
+}
+```
+
+#### resizeCanvas
+Resize a canvas element based on its bounding box and device pixel ratio (DPR).
+
+- `canvas` – Target canvas element to resize
+- `options` – Optional configuration
+  - `max` – Maximum constraints
+    - `dpr` – Maximum device pixel ratio (default: 1.5)
+    - `width` – Maximum canvas width (default: Infinity)
+    - `height` – Maximum canvas height (default: Infinity)
+  - `min` – Minimum constraints
+    - `dpr` – Minimum device pixel ratio (default: 1)
+    - `width` – Minimum canvas width (default: 1)
+    - `height` – Minimum canvas height (default: 1)
+  - `source` – Device pixel ratio source (default: `window.devicePixelRatio || 1`)
+  - `autoResize` – Automatically resize on window resize events (default: false)
+  - `onResize` – Callback invoked after resize with new width/height
+  - `rounding` – Rounding strategy for DPR scaling (`"floor" | "round" | "ceil"`)
+
+```ts
+// Default usage (uses window.devicePixelRatio)
+resizeCanvas(canvas)
+
+// Custom DPR source
+resizeCanvas(canvas, { source: 2 })
+
+// Custom min/max constraints
+resizeCanvas(canvas, { max: { dpr: 2 }, min: { width: 10, height: 10 } })
+
+// Auto resize with callback
+resizeCanvas(canvas, {
+  autoResize: true,
+  onResize: (w, h) => console.log("Resized :", w, h),
+  rounding: "round"
+})
+```
+
+## Uniform
 
 By centralizing uniform setting logic, these helpers provide a unified, predictable API for assigning 
 values to shader uniforms. This reduces repetitive code, ensures consistent type handling, and 

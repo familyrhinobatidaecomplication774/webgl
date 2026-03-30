@@ -1,0 +1,6 @@
+export { attachShader } from "./attach-shader"
+export { compileShader, type CompileShaderOptions } from "./compile-shader"
+export { createShader, type CreateShaderOptions } from "./create-shader"
+export { deleteShader } from "./delete-shader"
+export { detachShader } from "./detach-shader"
+export { validateShader } from "./validate-shader"

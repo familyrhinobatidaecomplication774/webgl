@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../utility/handle-error"
 
 /**
  * Validate whether a WebGL shader compiled successfully
@@ -33,32 +34,37 @@ export function validateShader(
 ): boolean {
   const { strict = false } = options
 
-  // If shader is null, either throw (strict) or return false
+  // Shader reference is null → creation failed or deleted
   if (!shader) {
-    if (strict) {
-      throw new Error(
-        "Shader validation failed: provided shader reference is null. " +
-        "This usually indicates that shader creation did not succeed or " +
-        "the shader object was already deleted."
-      )
-    }
+    handleError({
+      subject : "shader",
+      context : {
+        action  : "validateShader",
+        result  : "Shader reference is null (creation failed or deleted)"
+      },
+      strict  : strict
+    })
     return false
   }
 
-  // Query shader compilation status from WebGL
+  // Query compilation status from WebGL
   const status = context.getShaderParameter(shader, context.COMPILE_STATUS)
 
-  // If compilation failed, either throw (strict) or return false
-  if (!status && strict) {
+  // Compilation failed → report error with detailed info log
+  if (!status) {
     const infoLog = context.getShaderInfoLog(shader) || "No compilation log available"
-    throw new Error(
-      "Shader validation failed: compilation did not succeed. " +
-      "Possible causes include syntax errors in GLSL source, " +
-      "unsupported features on the current GPU/driver, or exceeding resource limits. " +
-      "WebGL info log : " + infoLog
-    )
+    handleError({
+      subject : "shader",
+      context : {
+        action  : "validateShader",
+        result  : "Shader compilation failed",
+        details : infoLog
+      },
+      strict  : strict
+    })
+    return false
   }
 
-  // Return true if compiled successfully, false otherwise
-  return !!status
+  // Compilation succeeded
+  return true
 }

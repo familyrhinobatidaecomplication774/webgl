@@ -1,10 +1,11 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../utility/handle-error"
 
 /**
  * Delete a WebGL shader object and free GPU resources
  *
  * **Parameters**
- * - `context` – WebGL rendering context
+ * - `context` – WebGL rendering context (WebGL1 or WebGL2)
  * - `shader` – Shader object to delete
  * - `options` – Optional configuration
  *    - `strict` – Throw error if shader is null or deletion fails (default: false)
@@ -25,16 +26,16 @@ export function deleteShader(
 ): void {
   const { strict = false } = options
 
-  // If shader is null and strict mode is enabled, throw an error
+  // Shader reference is null → report error
   if (!shader) {
-    if (strict) {
-      throw new Error(
-        "Shader deletion failed: provided shader reference is null. " +
-        "This usually means the shader was never created successfully, " +
-        "has already been deleted, or the reference was lost. " +
-        "Ensure that compileShader returned a valid shader before attempting deletion."
-      )
-    }
+    handleError({
+      subject : "shader",
+      context : {
+        action  : "deleteShader",
+        result  : "Shader reference is null (never created, already deleted, or lost)"
+      },
+      strict  : strict
+    })
     return
   }
 

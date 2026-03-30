@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../utility/handle-error"
 
 /**
  * Configuration options for creating a WebGL shader object
@@ -14,7 +15,7 @@ export interface CreateShaderOptions extends BaseOptions {
  * Create a WebGL shader object with the given rendering context
  *
  * **Parameters**
- * - `context` – WebGL rendering context to create the shader in
+ * - `context` – WebGL rendering context (WebGL1 or WebGL2)
  * - `options` – Shader configuration
  *    - `type` – Shader type (`VERTEX_SHADER` or `FRAGMENT_SHADER`)
  *    - `strict` – Throw error if shader creation fails (default: false)
@@ -32,19 +33,26 @@ export interface CreateShaderOptions extends BaseOptions {
  * ```
  */
 export function createShader(
-  context: WebGLRenderingContext,
+  context: WebGLRenderingContext | WebGL2RenderingContext,
   options: CreateShaderOptions
 ): WebGLShader | null {
   const { type, strict = false } = options
 
   const shader = context.createShader(type)
 
+  // Shader creation failed → report error
   if (!shader) {
-    if (strict) {
-      throw new Error("Failed to create shader")
-    }
+    handleError({
+      subject : "shader",
+      context : {
+        action  : "createShader",
+        result  : `Failed to create shader of type ${type}`
+      },
+      strict  : strict
+    })
     return null
   }
 
+  // Shader created successfully
   return shader
 }

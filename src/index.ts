@@ -23,12 +23,35 @@ export { resizeCanvas, type ResizeCanvasOptions } from "./canvas/resize-canvas"
 export { canvasContext, type CanvasContextOptions } from "./context/canvas-context"
 
 // Uniform
-export { setUniform1, type Uniform1Options } from "./uniform/set-uniform1"
-export { setUniform2, type Uniform2Options } from "./uniform/set-uniform2"
-export { setUniform3, type Uniform3Options } from "./uniform/set-uniform3"
-export { setUniform4, type Uniform4Options } from "./uniform/set-uniform4"
-export { setUniformSampler, type UniformSamplerOptions } from "./uniform/set-uniform-sampler"
-export { setUniformBlock, type UniformBlockOptions } from "./uniform/set-uniform-block"
-export { setUniformBuffer, type UniformBufferOptions } from "./uniform/set-uniform-buffer"
-export { setUniformMatrix, type UniformMatrixOptions } from "./uniform/set-uniform-matrix"
-export { setUniformUi, type UniformUiOptions } from "./uniform/set-uniform-ui"
+export {
+  setUniform1,
+  setUniform2,
+  setUniform3,
+  setUniform4,
+  setUniformSampler,
+  setUniformBlock,
+  setUniformBuffer,
+  setUniformMatrix,
+  setUniformUi,
+  type Uniform1Options,
+  type Uniform2Options,
+  type Uniform3Options,
+  type Uniform4Options,
+  type UniformSamplerOptions,
+  type UniformBlockOptions,
+  type UniformMatrixOptions,
+  type UniformBufferOptions,
+  type UniformUiOptions
+} from "./uniform"
+
+// Shader
+export {
+  attachShader,
+  compileShader,
+  createShader,
+  deleteShader,
+  detachShader,
+  validateShader,
+  type CompileShaderOptions,
+  type CreateShaderOptions
+} from "./shader"

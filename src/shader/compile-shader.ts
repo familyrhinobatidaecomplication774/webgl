@@ -1,6 +1,7 @@
 import type { BaseOptions } from "../option"
 import { createShader } from "./create-shader"
 import { validateShader } from "./validate-shader"
+import { handleError } from "../utility/handle-error"
 
 /**
  * Configuration options for compiling a WebGL shader
@@ -44,22 +45,35 @@ export interface CompileShaderOptions extends BaseOptions {
  * ```
  */
 export function compileShader(
-  context: WebGLRenderingContext,
+  context: WebGLRenderingContext | WebGL2RenderingContext,
   options: CompileShaderOptions
 ): WebGLShader | null {
   const { source, type, strict = false } = options
 
-  // Create shader object using our utility
+  // Create shader object
   const shader = createShader(context, { type, strict })
-
   if (!shader) {
-    if (strict) {
-      throw new Error(
-        "Shader compilation aborted: failed to create shader object. " +
-        "This may indicate insufficient GPU resources, unsupported shader type, " +
-        "or that the WebGL context is invalid."
-      )
-    }
+    handleError({
+      subject : "shader",
+      context : {
+        action  : "compileShader",
+        result  : "Failed to create shader object"
+      },
+      strict  : strict
+    })
+    return null
+  }
+
+  // Validate source
+  if (!source || source.trim().length === 0) {
+    handleError({
+      subject : "shader",
+      context : {
+        action  : "compileShader",
+        result  : "Shader source code is empty"
+      },
+      strict  : strict
+    })
     return null
   }
 
@@ -69,16 +83,27 @@ export function compileShader(
   // Compile the shader source
   context.compileShader(shader)
 
+  // Validate compilation result
   if (strict) {
-    // In strict mode, validate compilation result and throw if failed
     validateShader(context, shader, { strict: true })
   } else {
-    // In silent mode, just check status without throwing
     const status = context.getShaderParameter(shader, context.COMPILE_STATUS)
     if (!status) {
+      const infoLog = context.getShaderInfoLog(shader) || "No compilation log available"
+
+      handleError({
+        subject : "shader",
+        context : {
+          action  : "compileShader",
+          result  : "Shader compilation failed",
+          details : infoLog
+        },
+        strict  : strict
+      })
       return null
     }
   }
 
+  // Case 6: Compilation succeeded
   return shader
 }
