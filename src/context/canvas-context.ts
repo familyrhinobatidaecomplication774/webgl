@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../error"
 
 /**
  * Configuration options for creating a WebGL context
@@ -61,13 +62,17 @@ export function canvasContext(
     context = canvas.getContext("webgl", attributes)
   }
 
-  // If no context was created and strict mode is enabled, throw an error
-  if (!context && strict) {
-    throw new Error(
-      "Failed to initialize WebGL context. " +
-      "This browser or device may not support WebGL, " +
-      "or the provided context attributes are not compatible."
-    )
+  // If no context was created, delegate to centralized error handler
+  if (!context) {
+    handleError({
+      subject : "webgl",
+      context : {
+        action  : "initialization",
+        result  : "Failed to initialize WebGL context.",
+        details : "This browser or device may not support WebGL, or the provided context attributes are not compatible."
+      },
+      strict  : strict
+    })
   }
 
   // Return the created context (or null if not available)
