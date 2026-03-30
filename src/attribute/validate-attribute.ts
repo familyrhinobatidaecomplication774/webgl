@@ -26,11 +26,16 @@ export interface ValidateAttributeOptions extends BaseOptions {
  * // Validate attribute existence
  * const location = validateAttribute(context, program, { name: "aPosition" })
  *
- * // Enforce strict mode
+ * // Enforce strict mode: throw error if missing
  * const location = validateAttribute(context, program, {
  *   name: "aPosition",
  *   strict: true
  * })
+ *
+ * // Use location in subsequent binding
+ * if (location !== -1) {
+ *   context.enableVertexAttribArray(location)
+ * }
  * ```
  */
 export function validateAttribute(

@@ -78,30 +78,29 @@ This section documents the helper functions for managing vertex attributes, incl
 ### API
 
 #### bindAttribute
-Binds a vertex attribute to the currently bound buffer and defines how data is read
+Binds a vertex attribute to the currently bound buffer and defines how data is read.
 
 - `context` – WebGL rendering context (WebGL1 or WebGL2)
 - `program` – Linked shader program
 - `options` – Attribute binding configuration
-  - `name` – Attribute name in the shader
-  - `size` – Number of components per attribute (e.g. 2 for vec2, 3 for vec3)
-  - `type` – Data type of each component (e.g. `context.FLOAT`, `context.UNSIGNED_BYTE`)
-  - `stride` – Byte offset between consecutive attributes (default: 0)
-  - `offset` – Byte offset of the first component (default: 0)
-  - `strict` – Throw error if attribute is not found (default: false)
-  - `normalize` – Normalize integer data values to [0,1] or [-1,1] (default: false, WebGL1 & WebGL2)
-  - `divisor` – Divisor for instanced rendering (default: 0, WebGL2 only)
-  - `integer` – Use integer attribute binding (`vertexAttribIPointer`) instead of float (default: false, WebGL2 only)
+    - `name` – Attribute name in the shader (e.g. `"aPosition"`)
+    - `size` – Number of components per attribute (e.g. 2 for vec2, 3 for vec3)
+    - `type` – Data type of each component (e.g. `context.FLOAT`, `context.UNSIGNED_BYTE`)
+    - `stride` – Byte offset between consecutive attributes (default: 0)
+    - `offset` – Byte offset of the first component (default: 0)
+    - `strict` – Throw error if attribute is not found (default: false)
+    - `normalize` – Normalize integer data values to [0,1] or [-1,1] (default: false, WebGL1 & WebGL2)
+    - `divisor` – Divisor for instanced rendering (default: 0, WebGL2 only)
+    - `integer` – Use integer attribute binding (`vertexAttribIPointer`) instead of float (default: false, WebGL2 only)
 
 ```ts
-// Silent mode (default): does nothing if attribute is missing
-bindAttribute(context, program, {
-  name: "aPosition",
-  size: 3,
-  type: context.FLOAT
-})
+// Vertex shader example:
+// attribute vec3 aPosition;
 
-// Strict mode: throws an error if attribute is missing
+// Bind the "aPosition" attribute to a buffer (float attribute)
+bindAttribute(context, program, { name: "aPosition", size: 3, type: context.FLOAT })
+
+// Enforce strict mode: throw error if missing
 bindAttribute(context, program, {
   name: "aPosition",
   size: 3,
@@ -118,6 +117,7 @@ bindAttribute(context, program, {
 })
 
 // Integer attribute binding (WebGL2 only)
+// attribute ivec4 aBoneIDs;
 bindAttribute(context, program, {
   name: "aBoneIDs",
   size: 4,
@@ -135,60 +135,68 @@ bindAttribute(context, program, {
 ```
 
 #### disableAttribute
-Disables a vertex attribute in the shader program
+Disables a vertex attribute in the currently linked shader program.
 
 - `context` – WebGL rendering context (WebGL1 or WebGL2)
 - `program` – Linked shader program
 - `options` – Attribute disabling configuration
-  - `name` – Attribute name in the shader (e.g. `"aTexCoord"`)
-  - `strict` – Throw error if attribute is not found (default: false)
+    - `name` – Attribute name in the shader (e.g. `"aTexCoord"`)
+    - `strict` – Throw error if attribute is not found (default: false)
 
 ```ts
-// Silent mode (default): does nothing if attribute is missing
+// Disable the "aTexCoord" attribute when it's not needed
 disableAttribute(context, program, { name: "aTexCoord" })
 
-// Strict mode: throws an error if attribute is missing
-disableAttribute(context, program, { name: "aTexCoord", strict: true })
+// Enforce strict mode: throw error if missing
+disableAttribute(context, program, {
+  name: "aTexCoord",
+  strict: true
+})
 ```
 
 #### enableAttribute
-Enables a vertex attribute in the shader program
+Enables a vertex attribute in the currently linked shader program.
 
 - `context` – WebGL rendering context (WebGL1 or WebGL2)
 - `program` – Linked shader program
 - `options` – Attribute enabling configuration
-  - `name` – Attribute name in the shader (e.g. `"aPosition"`)
-  - `strict` – Throw error if attribute is not found (default: false)
+    - `name` – Attribute name in the shader (e.g. `"aPosition"`)
+    - `strict` – Throw error if attribute is not found (default: false)
 
 ```ts
-// Silent mode (default): does nothing if attribute is missing
+// Enable the "aPosition" attribute
 enableAttribute(context, program, { name: "aPosition" })
 
-// Strict mode: throws an error if attribute is missing
-enableAttribute(context, program, { name: "aPosition", strict: true })
+// Enforce strict mode: throw error if missing
+enableAttribute(context, program, {
+  name: "aPosition",
+  strict: true
+})
 ```
 
 #### validateAttribute
-Checks whether an attribute exists in the shader program and returns its location
+Validates a vertex attribute by checking its location in the linked shader program.
 
 - `context` – WebGL rendering context (WebGL1 or WebGL2)
 - `program` – Linked shader program
 - `options` – Validation configuration
-  - `name` – Attribute name in the shader (e.g. `"aPosition"`)
-  - `strict` – Throw error if attribute is not found (default: false)
+    - `name` – Attribute name in the shader (e.g. `"aPosition"`)
+    - `strict` – Throw error if attribute is not found (default: false)
 
 ```ts
-// Silent mode (default): returns -1 if attribute is missing, no error thrown
+// Validate attribute existence
 const location = validateAttribute(context, program, { name: "aPosition" })
-if (location !== -1) {
-  context.enableVertexAttribArray(location)
-}
 
-// Strict mode: throws an error if attribute is missing
-const locationStrict = validateAttribute(context, program, {
+// Enforce strict mode: throw error if missing
+const location2 = validateAttribute(context, program, {
   name: "aPosition",
   strict: true
 })
+
+// Use location in subsequent binding
+if (location !== -1) {
+  context.enableVertexAttribArray(location)
+}
 ```
 
 ## Buffers
