@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../error"
 
 /**
  * Configuration options for setting a uniform block
@@ -48,12 +49,23 @@ export function setUniformBlock(
   options: UniformBlockOptions
 ): void {
   const { name, index, strict = false } = options
+
+  // Find the uniform block index in the shader program
   const blockIndex = context.getUniformBlockIndex(program, name)
 
+  // If uniform block is not found, delegate to centralized error handler
   if (blockIndex === context.INVALID_INDEX) {
-    if (strict) throw new Error(`Uniform block "${name}" not found in shader program`)
+    handleError({
+      subject : "uniform",
+      context : {
+        action  : "setUniformBlock",
+        result  : `Uniform block "${name}" not found in shader program`
+      },
+      strict  : strict
+    })
     return
   }
 
+  // Bind the uniform block to the given binding point
   context.uniformBlockBinding(program, blockIndex, index)
 }

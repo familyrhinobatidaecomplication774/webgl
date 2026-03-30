@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../error"
 
 /**
  * Configuration options for binding a uniform buffer
@@ -52,10 +53,19 @@ export function setUniformBuffer(
 ): void {
   const { buffer, index, strict = false } = options
 
+  // If buffer is missing, delegate to centralized error handler
   if (!buffer) {
-    if (strict) throw new Error("Uniform buffer is null or undefined")
+    handleError({
+      subject : "uniform",
+      context : {
+        action  : "setUniformBuffer",
+        result  : "Uniform buffer is null or undefined"
+      },
+      strict  : strict
+    })
     return
   }
 
+  // Bind the buffer to the given binding point
   context.bindBufferBase(context.UNIFORM_BUFFER, index, buffer)
 }

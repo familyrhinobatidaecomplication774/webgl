@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../../option"
+import { handleError } from "../../error"
 
 export interface UniformMatrix3Options extends BaseOptions {
   /**
@@ -61,15 +62,22 @@ export function setUniformMatrix3fv(
 ): void {
   const { name, matrix, transpose = false, strict = false } = options
 
+  // Find the uniform location in the shader program
   const location = context.getUniformLocation(program, name)
 
+  // If uniform is not found, delegate to centralized error handler
   if (location === null) {
-    if (strict) {
-      throw new Error(`Uniform "${name}" not found in shader program`)
-    }
+    handleError({
+      subject : "uniform",
+      context : {
+        action  : "setUniformMatrix3fv",
+        result  : `Uniform "${name}" not found in shader program`
+      },
+      strict  : strict
+    })
     return
   }
 
+  // Apply the matrix to the uniform
   context.uniformMatrix3fv(location, transpose, matrix)
 }
-

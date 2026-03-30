@@ -1,4 +1,5 @@
 import type { BaseOptions } from "../option"
+import { handleError } from "../error"
 
 /**
  * Configuration options for setting a vec1 uniform
@@ -69,9 +70,16 @@ export function setUniform1(
   // Find the uniform location in the shader program
   const location = context.getUniformLocation(program, name)
 
-  // If uniform is not found, handle according to strict mode
+  // If uniform is not found, delegate to centralized error handler
   if (location === null) {
-    if (strict) throw new Error(`Uniform "${name}" not found in shader program`)
+    handleError({
+      subject: "uniform",
+      context: {
+        action: "setUniform1",
+        result: `Uniform "${name}" not found in shader program`
+      },
+      strict
+    })
     return
   }
 
@@ -103,6 +111,13 @@ export function setUniform1(
     return
   }
 
-  // If none of the supported types match, throw an error
-  throw new Error(`Unsupported uniform value type for "${name}"`)
+  // If none of the supported types match, delegate to centralized error handler
+  handleError({
+    subject : "uniform",
+    context : {
+      action  : "setUniform1",
+      result  : `Unsupported uniform value type for "${name}"`
+    },
+    strict  : strict
+  })
 }

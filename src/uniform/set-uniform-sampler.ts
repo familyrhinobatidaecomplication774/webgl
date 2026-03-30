@@ -1,4 +1,5 @@
 import { BaseOptions } from "../option"
+import { handleError } from "../error"
 
 /**
  * Configuration options for setting a sampler uniform
@@ -52,14 +53,22 @@ export function setUniformSampler(
 ): void {
   const { name, unit, strict = false } = options
 
+  // Find the uniform location in the shader program
   const location = context.getUniformLocation(program, name)
 
+  // If uniform is not found, delegate to centralized error handler
   if (location === null) {
-    if (strict) {
-      throw new Error(`Uniform "${name}" not found in shader program`)
-    }
+    handleError({
+      subject : "uniform",
+      context : {
+        action  : "setUniformSampler",
+        result  : `Uniform "${name}" not found in shader program`
+      },
+      strict  : strict
+    })
     return
   }
 
+  // Bind the texture unit to the uniform sampler
   context.uniform1i(location, unit)
 }
