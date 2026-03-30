@@ -45,10 +45,50 @@
   },
 
   "exports"           : {
-    "."       : {
+    "."           : {
       "types"   : "./dist/index.d.mts",
       "import"  : "./dist/index.mjs",
       "require" : "./dist/index.mjs"
+    },
+    "./attribute" : {
+      "types"   : "./dist/attribute/index.d.mts",
+      "import"  : "./dist/attribute/index.mjs",
+      "require" : "./dist/attribute/index.mjs"
+    },
+    "./buffer"    : {
+      "types"   : "./dist/buffer/index.d.mts",
+      "import"  : "./dist/buffer/index.mjs",
+      "require" : "./dist/buffer/index.mjs"
+    },
+    "./canvas"    : {
+      "types"   : "./dist/canvas/index.d.mts",
+      "import"  : "./dist/canvas/index.mjs",
+      "require" : "./dist/canvas/index.mjs"
+    },
+    "./context"   : {
+      "types"   : "./dist/context/index.d.mts",
+      "import"  : "./dist/context/index.mjs",
+      "require" : "./dist/context/index.mjs"
+    },
+    "./program"   : {
+      "types"   : "./dist/program/index.d.mts",
+      "import"  : "./dist/program/index.mjs",
+      "require" : "./dist/program/index.mjs"
+    },
+    "./shader"    : {
+      "types"   : "./dist/shader/index.d.mts",
+      "import"  : "./dist/shader/index.mjs",
+      "require" : "./dist/shader/index.mjs"
+    },
+    "./texture"   : {
+      "types"   : "./dist/texture/index.d.mts",
+      "import"  : "./dist/texture/index.mjs",
+      "require" : "./dist/texture/index.mjs"
+    },
+    "./uniform"   : {
+      "types"   : "./dist/uniform/index.d.mts",
+      "import"  : "./dist/uniform/index.mjs",
+      "require" : "./dist/uniform/index.mjs"
     }
   },
   "files"             : ["dist", "readme.md", "license.md"],
