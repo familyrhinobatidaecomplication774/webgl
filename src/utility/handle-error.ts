@@ -2,19 +2,42 @@ import { parseSource } from "./parse-source"
 import { parseContext } from "./parse-context"
 
 /**
- * Context object for WebGL errors
+ * Structured context object for WebGL errors
  */
 export type WebGLErrorContext = {
+  /**
+   * Operation being performed when the error occurred (e.g. "compilation", "linking", "binding")
+   */
   action: string
+
+  /**
+   * Short description of the error outcome (e.g. "Failed to compile shader")
+   */
   result: string
+
+  /**
+   * Additional information about the error (optional, e.g. GLSL compiler log or driver message)
+   */
   details?: string
+
+  /**
+   * Source file path where the error originated (auto-extracted if available)
+   */
   file?: string
+
+  /**
+   * Line number in the source file (auto-extracted if available)
+   */
   line?: number
+
+  /**
+   * Column number in the source file (auto-extracted if available)
+   */
   column?: number
 }
 
 /**
- * Context object for WebGL errors
+ * Enumerated subject types for WebGL errors
  */
 export type WebGLErrorType =
   | "webgl"
@@ -169,32 +192,42 @@ export class CanvasError extends WebGLError {
  * ```
  */
 export function handleError({
-  strict,
   subject,
-  context
+  context,
+  strict = false
 }: {
-  strict: boolean
   subject: WebGLErrorType
   context: WebGLErrorContext
+  strict?: boolean
 }): void {
-  if (strict) {
-    switch (subject) {
-      case "shader":
-        throw new ShaderError(context)
-      case "program":
-        throw new ProgramError(context)
-      case "buffer":
-        throw new BufferError(context)
-      case "attribute":
-        throw new AttributeError(context)
-      case "uniform":
-        throw new UniformError(context)
-      case "texture":
-        throw new TextureError(context)
-      case "canvas":
-        throw new CanvasError(context)
-      case "webgl":
-        throw new WebGLError("WebGL", context)
-    }
+  // If strict is false → skip silently, do nothing
+  if (!strict) return
+
+  // Based on the subject type, throw the corresponding specialized error
+  switch (subject) {
+    case "shader":
+      // Shader compilation or linking error
+      throw new ShaderError(context)
+    case "program":
+      // Program creation or linking error
+      throw new ProgramError(context)
+    case "buffer":
+      // Buffer binding or initialization error
+      throw new BufferError(context)
+    case "attribute":
+      // Attribute binding or lookup error
+      throw new AttributeError(context)
+    case "uniform":
+      // Uniform setting or lookup error
+      throw new UniformError(context)
+    case "texture":
+      // Texture creation, binding, or upload error
+      throw new TextureError(context)
+    case "canvas":
+      // Canvas initialization or rendering error
+      throw new CanvasError(context)
+    case "webgl":
+      // General WebGL environment error
+      throw new WebGLError("WebGL", context)
   }
 }
