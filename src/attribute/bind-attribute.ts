@@ -173,7 +173,7 @@ export function bindAttribute(
 
     if (isIntegerAttribute && "vertexAttribIPointer" in context) {
       // WebGL2: bind integer attribute (ivec/uvec types)
-      (context as WebGL2RenderingContext).vertexAttribIPointer(location, size, type, stride, offset)
+      context.vertexAttribIPointer(location, size, type, stride, offset)
     } else {
       // Default: bind float attribute (vec types)
       context.vertexAttribPointer(location, size, type, normalize, stride, offset)
@@ -181,7 +181,7 @@ export function bindAttribute(
 
     // WebGL2: support instanced rendering (per-instance attributes)
     if ("vertexAttribDivisor" in context && divisor > 0) {
-      (context as WebGL2RenderingContext).vertexAttribDivisor(location, divisor)
+      context.vertexAttribDivisor(location, divisor)
     }
   }
 }
